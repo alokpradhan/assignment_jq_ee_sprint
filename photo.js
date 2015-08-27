@@ -1,8 +1,4 @@
-function moveCallback(event){
-    box();
-}
-
-function box(){
+function createBoxFrame(){
   $('#box').css({
     'left': event.clientX-50,
     'top': event.clientY-50,
@@ -13,71 +9,63 @@ function box(){
   });
 }
 
-function enterCallback(){
+function addBoxOnImage(){
   $('img').after('<div id="box"></div>');
-  $(this).mousemove( moveCallback );
+  $(this).mousemove(createBoxFrame);
 }
 
-function person(){
+function createPersonSelector(){
+  $('#box').append('<div id="person-selector"><li>Person 1</li><li>Person 2</li><li>Person 3</li></div>');
+
   $('#person-selector').css({ 'width':'100px',
-                                  'top': '100px',
-                                  'left': '-6px',
-                                  'background-color': 'white',
-                                  'position' : 'absolute',
-                                  'border': '6px solid white'
-
-                                });
+                              'top': '100px',
+                              'left': '-6px',
+                              'background-color': 'white',
+                              'position' : 'absolute',
+                              'border': '6px solid white'
+                            });
 }
-//Creates a box that moves with a mouse
-$('#image-container').mouseenter(enterCallback);
 
-//Freezes box and show choice on click
+// Creates a box that moves with a mouse
+$('#image-container').mouseenter(addBoxOnImage);
+
+// Freezes box and show choice on click
 $('#image-container').click(function(){
-    console.log("click on box and freeze it");
-  //Turns off mousemove and mouseenter to prevent moving box
-    $(this).off('mousemove', moveCallback).off('mouseenter', enterCallback);
-
-  //Adds a list of choices
+  // Turns off mousemove and mouseenter to prevent moving box
+    $(this).off('mousemove', createBoxFrame)
+    .off('mouseenter', addBoxOnImage);
+  // Adds a list of choices
     if ($('#person-selector').length === 0) {
-      $('#box').append('<div id="person-selector"><li>Person 1</li><li>Person 2</li><li>Person 3</li></div>');
-      //Style the choices
-      person();
+      createPersonSelector();
     }
 });
 
-//Creates a box on click after clicking out
+// Creates a box after clicking out
 $('img').click(function(event){
-    event.stopPropagation();
-    console.log("click on img ");
-    $('#box').remove();
-    $('img').after('<div id="box"></div>');
-    $('#image-container').mousemove(moveCallback);
+  event.stopPropagation();
+  $('#box').remove();
+  $('img').after('<div id="box"></div>');
+  $('#image-container').mousemove(createBoxFrame);
 });
 
+// On the mouse leaving image remove box and person selector
 $('#image-container').mouseleave(function(){
   $('#box').remove();
   $('#person-selector').remove();
 });
 
-$('body').on("mouseenter","#person-selector li", function(){
-  console.log("allows to highlight green");
-  $(this).css("background-color","green");
-  $(this).click(function(){$(this).siblings().remove();});
+$('body').on("mouseenter","#person-selector li", function(event){
 
-  $('img').after($('#box').clone()).removeAttr('id').addAttr('id', 'fixed-box');
+  $(this).css("background-color","green");
+
+  $(this).click(function(){
+    $(this).siblings().remove();
+    $new_box = $('img').after($('#box').clone().prop('id', 'fixed-box'));
+    // $new_box.after($('#person-selector').clone().prop('id', 'fixed-person'));
+  });
 
   }).on("mouseleave","#person-selector li", function(){
   $(this).css("background-color","white");
 });
-
-
-
-
-// $('select').hover(function(){
-
-//     var count = $(this).children().length;
-//     $(this).attr('size', count);
-//      $(this).slideUp(3000);
-// });
 
 
